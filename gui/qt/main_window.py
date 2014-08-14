@@ -25,6 +25,9 @@ import shutil
 import StringIO
 
 
+from opendig import ons_resolver
+import json
+
 import PyQt4
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -807,7 +810,7 @@ class ElectrumWindow(QMainWindow):
 
 
     def receive_at(self, addr):
-        if not bitcoin.is_address(addr):
+        if not bitcoin.is_valid(addr):
             return
         self.tabs.setCurrentIndex(2)
         self.receive_address_e.setText(addr)
@@ -1025,13 +1028,29 @@ class ElectrumWindow(QMainWindow):
             QMessageBox.warning(self, _('Error'), _('No outputs'), _('OK'))
             return
 
+        
+        if not is_valid(outputs[0][1]):
+            # if its not a valid address, lets check if this is a valid coin username
+            ADDRESS = outputs[0][1]
+            ADDRESS_TYPE = outputs[0][0]
+            AMOUNT = outputs[0][2]
+
+            data = ons_resolver(ADDRESS)
+            if 'status' in data:
+                # in case of network failure or wrong username input
+                QMessageBox.warning(self, _('Error'), _(data['message']), _('OK'))
+                return
+            else:
+                outputs = [(ADDRESS_TYPE, data['bitcoin']['address'], AMOUNT)]
+
+
         for type, addr, amount in outputs:
             if addr is None:
                 QMessageBox.warning(self, _('Error'), _('Bitcoin Address is None'), _('OK'))
                 return
             if type == 'op_return':
                 continue
-            if type == 'address' and not bitcoin.is_address(addr):
+            if type == 'address' and not bitcoin.is_valid(addr):
                 QMessageBox.warning(self, _('Error'), _('Invalid Bitcoin Address'), _('OK'))
                 return
             if amount is None:
@@ -2186,7 +2205,7 @@ class ElectrumWindow(QMainWindow):
         try:
             for position, row in enumerate(csvReader):
                 address = row[0]
-                if not is_address(address):
+                if not is_valid(address):
                     errors.append((position, address))
                     continue
                 amount = Decimal(row[1])
@@ -2447,7 +2466,7 @@ class ElectrumWindow(QMainWindow):
 
         def get_address():
             addr = str(address_e.text())
-            if bitcoin.is_address(addr):
+            if bitcoin.is_valid(addr):
                 return addr
 
         def get_pk():

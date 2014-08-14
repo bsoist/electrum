@@ -343,10 +343,7 @@ def address_from_private_key(sec):
 
 
 def is_valid(addr):
-    return is_address(addr)
-
-
-def is_address(addr):
+    # Now Checking here wheather its a valid bitcoin address or not
     ADDRESS_RE = re.compile('[1-9A-HJ-NP-Za-km-z]{26,}\\Z')
     if not ADDRESS_RE.match(addr): return False
     try:
@@ -354,6 +351,10 @@ def is_address(addr):
     except Exception:
         return False
     return addr == hash_160_to_bc_address(h, addrtype)
+
+def is_address(addr):
+    # Returning True, Otherwise it will return 'False' if it recieves username instead of bitcoin address
+    return True
 
 
 def is_private_key(key):
@@ -706,10 +707,10 @@ def xpub_from_xprv(xprv, testnet=False):
     return EncodeBase58Check(xpub)
 
 
-def bip32_root(mnemonic_seed, testnet=False):
+def bip32_root(seed, testnet=False):
     import hmac
     header_pub, header_priv = _get_headers(testnet)
-    seed = mnemonic_to_seed(mnemonic_seed,'')
+    seed = seed.decode('hex')
     I = hmac.new("Bitcoin seed", seed, hashlib.sha512).digest()
     master_k = I[0:32]
     master_c = I[32:]

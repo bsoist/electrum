@@ -89,7 +89,6 @@ class PayToEdit(QRTextEdit):
         r = line.strip()
         m = re.match('^'+RE_ALIAS+'$', r)
         address = m.group(2) if m else r
-        assert bitcoin.is_address(address)
         return address
 
 
