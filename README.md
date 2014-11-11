@@ -1,4 +1,4 @@
-Electrum - lightweight Bitcoin client
+## Electrum (lightweight Bitcoin client w/ Openname support)
 
 Licence: GNU GPL v3
 Author: Thomas Voegtlin
@@ -6,8 +6,7 @@ Language: Python
 Homepage: https://electrum.org/
 
 
-1. GETTING STARTED
-------------------
+### Getting started
 
 To run Electrum from this directory, just do:
 
@@ -24,9 +23,7 @@ To start Electrum from your web browser, see
 http://electrum.org/bitcoin_URIs.html
 
 
-
-2. HOW OFFICIAL PACKAGES ARE CREATED
-------------------------------------
+###  How Official Packages are Created
 
 python mki18n.py
 pyrcc4 icons.qrc -o gui/qt/icons_rc.py
@@ -41,5 +38,4 @@ On Mac OS X:
   ARCHFLAGS="-arch i386 -arch x86_64" sudo python setup-release.py py2app --includes sip
 
   sudo hdiutil create -fs HFS+ -volname "Electrum" -srcfolder dist/Electrum.app dist/electrum-VERSION-macosx.dmg
-
 
